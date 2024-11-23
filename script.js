@@ -7,8 +7,9 @@ const data = {
             trueAnswer: '1'
         },
         {
-            info: 'В таблице приведена стоимость перевозок между соседними железнодорожными станциями. Укажите схему, соответствующую таблице.   Таблица стоимости перевозок устроена следующим образом: числа, стоящие на пресечениях строк и столбцов таблиц, означают стоимость проезда между соответствующими соседними станциями. Если пересечение строки и столбца пусто, то станции не являются соседними. Укажите таблицу, для которой выполняется условие: «Минимальная стоимость проезда из А в В не больше 6». Стоимость проезда по маршруту складывается из стоимостей проезда между соответствующими соседними станциями. ',
-            images: ['excersices/test01/021.jpg','excersices/test01/022.jpg','excersices/test01/023.jpg','excersices/test01/024.jpg'],
+            info: 'В таблице приведена стоимость перевозок между соседними железнодорожными станциями.',
+            images: ['excersices/test01/021.jpg', 'excersices/test01/022.jpg', 'excersices/test01/023.jpg', 'excersices/test01/024.jpg'],
+            info2: 'Укажите схему, соответствующую таблице.   Таблица стоимости перевозок устроена следующим образом: числа, стоящие на пресечениях строк и столбцов таблиц, означают стоимость проезда между соответствующими соседними станциями. Если пересечение строки и столбца пусто, то станции не являются соседними. Укажите таблицу, для которой выполняется условие: «Минимальная стоимость проезда из А в В не больше 6». Стоимость проезда по маршруту складывается из стоимостей проезда между соответствующими соседними станциями. ',
             variants: null,
             trueAnswer: '2'
         },
@@ -36,14 +37,18 @@ const data = {
     ]
 };
 
+let questNumber;//глобальной переменной
+
 function renderQuestions(questions) {
     const container = document.getElementById('questions-container');
+    questNumber=0;
     questions.forEach((question, index) => {
+        questNumber++;
         const questionDiv = document.createElement('div');
         questionDiv.className = 'card mb-4';
-
+        
         const questionHeader = document.createElement('div');
-        questionHeader.className = 'card-header';
+        questionHeader.className = 'card-header info';
         questionHeader.textContent = `${index + 1}: ${question.info}`;
 
         const questionBody = document.createElement('div');
@@ -60,16 +65,26 @@ function renderQuestions(questions) {
             });
             questionBody.appendChild(imagesDiv);
         }
-
-        if (question.variants) {
+        if (question.info2) {
+            const questionInfo2 = document.createElement('div');
+            questionInfo2.className = 'info2';
+            //questionInfo2.style='text-align: justify;';
+            questionInfo2.textContent = `${question.info2}`;
+            questionBody.appendChild(questionInfo2);
+        }
+        const answerDiv = document.createElement('div');
+        answerDiv.className = 'card mb-4';
+        answerDiv.id='answer'+questNumber;
+        if (question.variants) {            
             question.variants.forEach(variant => {
                 const variantDiv = document.createElement('div');
+                
                 variantDiv.className = 'form-check';
 
                 const variantInput = document.createElement('input');
                 variantInput.className = 'form-check-input';
                 variantInput.type = 'radio';
-                variantInput.name = `question${index}`;
+                variantInput.name = `question${questNumber}`;
                 variantInput.value = variant;
 
                 const variantLabel = document.createElement('label');
@@ -78,23 +93,49 @@ function renderQuestions(questions) {
 
                 variantDiv.appendChild(variantInput);
                 variantDiv.appendChild(variantLabel);
-                questionBody.appendChild(variantDiv);
+                answerDiv.appendChild(variantDiv);
             });
         } else {
-            const textInput = document.createElement('input');
+            const textInput = document.createElement('input');            
             textInput.className = 'form-control';
             textInput.type = 'text';
             textInput.placeholder = 'Enter your answer';
             textInput.name = `question${index}`;
-            questionBody.appendChild(textInput);
+            answerDiv.appendChild(textInput);
         }
-
+        questionBody.appendChild(answerDiv);
         questionDiv.appendChild(questionHeader);
         questionDiv.appendChild(questionBody);
+
         container.appendChild(questionDiv);
     });
 }
 
+function check()
+{
+    
+    for(let i=1;i<=questNumber;i++)
+    {
+        let divAnswer=document.getElementById('answer'+i);
+        //console.log(divAnswer);
+        const inputElement = divAnswer.querySelector('input[type="text"]');
+        //console.log(inputElement);
+        if (inputElement) {//text
+
+            console.log(inputElement.value);
+        } else {
+            const radioInputs = document.getElementsByName(`question${i}`);
+
+            // Проходим по каждому элементу и проверяем, выбран ли он
+            for (let radio of radioInputs) {
+                if (radio.checked) {
+                    console.log('Выбранный radio input:', radio.value);
+                    break; // Выходим из цикла, так как найден выбранный радиокнопка
+                }
+            } 
+        }
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     renderQuestions(data.test1);

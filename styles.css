@@ -10,3 +10,17 @@ div{
 td input{
     width: 100px;
 }
+
+.info2
+{
+    text-align: justify;
+    color: black;
+    #font-size: 14px;
+}
+
+
+.info
+{
+    text-align: justify;
+    color: black;
+}
