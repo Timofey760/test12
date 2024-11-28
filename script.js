@@ -1,55 +1,24 @@
-const data = {
-    'test1': [
-        {
-            info: ' В таблице приведена стоимость перевозок между соседними железнодорожными станциями. Укажите схему, соответствующую таблице.',
-            images: ['excersices/test01/011.jpg'],
-            variants: null,
-            trueAnswer: '1'
-        },
-        {
-            info: 'В таблице приведена стоимость перевозок между соседними железнодорожными станциями.',
-            images: ['excersices/test01/021.jpg', 'excersices/test01/022.jpg', 'excersices/test01/023.jpg', 'excersices/test01/024.jpg'],
-            info2: 'Укажите схему, соответствующую таблице.   Таблица стоимости перевозок устроена следующим образом: числа, стоящие на пресечениях строк и столбцов таблиц, означают стоимость проезда между соответствующими соседними станциями. Если пересечение строки и столбца пусто, то станции не являются соседними. Укажите таблицу, для которой выполняется условие: «Минимальная стоимость проезда из А в В не больше 6». Стоимость проезда по маршруту складывается из стоимостей проезда между соответствующими соседними станциями. ',
-            variants: null,
-            trueAnswer: '2'
-        },
-        {
-            info: '2. Информационное сообщение объемом 3 Кбайта содержит 6144 символа. Сколько символов содержит алфавит, при помощи которого было записано это сообщение?',
-            images: null,
-            variants: ['4', '16', '8', '32'],
-            trueAnswer: '4'
-        },
-        {
-            info: `Грунтовая дорога проходит последовательно через 
-                            прибрежные населенные пункты А, В, С и D. При 
-                            этом длина дороги между А и В равна 15 км, между 
-                            В и С — 45 км и между С и D — 20 км. Расстояние 
-                            по воде между А и D 60 км и работает паромное 
-                            сообщение. Оцените минимально возможное время 
-                            движения велосипедиста из пункта А в пункт С, 
-                            если его скорость по грунтовой дороге 20 км/час, а 
-                            паром (которым можно воспользоваться) двигается 
-                            со скоростью 40 км/час.`,
-            images: null,
-            variants: ['1,5 часа', '2 часа', '2,5 часа', '3 часа'],
-            trueAnswer: '4'
-        }
-    ]
-};
+
 
 let questNumber;//глобальной переменной
 
 function renderQuestions(questions) {
     const container = document.getElementById('questions-container');
+    container.innerHTML='';
     questNumber=0;
+    console.log(questions)
     questions.forEach((question, index) => {
         questNumber++;
         const questionDiv = document.createElement('div');
         questionDiv.className = 'card mb-4';
-        
+        questionDiv.style='border-radius:30px';
         const questionHeader = document.createElement('div');
         questionHeader.className = 'card-header info';
+        
         questionHeader.textContent = `${index + 1}: ${question.info}`;
+        questionHeader.addEventListener('click',()=>{
+           speakText(questionHeader.textContent);
+        })
 
         const questionBody = document.createElement('div');
         questionBody.className = 'card-body';
@@ -138,19 +107,66 @@ function check()
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderQuestions(data.test1);
+    changeTest('test 1');
 });
-/*
+
 function changeTest(nameTest) {
-    for (let i = 0; i < data[nameTest].length; i++) {
-        let question = data[nameTest][i]
-        let pElement = document.createElement('p')
-        pElement.innerHTML = `${i + 1}. ${question['info']}`
-        //alert(pElement)
-        document.getElementById('question')pElement;
-    }
+    document.getElementById('display-name').innerHTML=data[nameTest].displayName;
+    renderQuestions(data[nameTest].questions);
+
 }
 
+let isAnimating = true;
 
+function toggleAnimation() {
+    const body = document.body;
+    if (isAnimating) {
+        body.style.animation = 'none';
+        toggleButton.textContent = 'Start Animation';
+    } else {
+        body.style.animation = 'gradient 15s ease infinite';
+        toggleButton.textContent = 'Stop Animation';
+    }
+    isAnimating = !isAnimating;
+};
+
+/*
+function speakText(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ru-RU'; // Устанавливаем язык на русский
+
+    window.speechSynthesis.speak(utterance);
+}
 */
 
+function speakText(text) {
+
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ru-RU'; // Устанавливаем язык на русский
+
+    // Получаем доступные голоса
+    const voices = window.speechSynthesis.getVoices();
+    console.log(voices);
+    let selectedVoice = null;
+
+    // Ищем голос на русском языке
+    for (let i = 0; i < voices.length; i++) {
+        if (voices[i].lang === 'ru-RU' && voices[i].name.includes('Google')) {
+            selectedVoice = voices[i];
+            break;
+        }
+    }
+
+    // Если найден подходящий голос, устанавливаем его
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    }
+
+    window.speechSynthesis.speak(utterance);
+}
+
+// Ожидаем, пока голоса будут загружены
+window.speechSynthesis.onvoiceschanged = function() {
+    speakText();
+};

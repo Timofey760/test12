@@ -11,9 +11,26 @@
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1 class="text-center">Test Questions</h1>
-        <div id="questions-container"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1 class="text-center" id="display-name"></h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <div class="btn-group-vertical" role="group" aria-label="Button group">
+                    <button class="btn btn-primary mt-4" onclick="changeTest('test 1')">Тест 1</button>
+                    <button class="btn btn-primary mt-4" onclick="changeTest('test 2')">Тест 2</button>
+                    <button class="btn btn-primary mt-4" id="toggleButton" onclick="toggleAnimation()">Stop Animation</button>                    
+                </div>
+            </div>
+
+
+            <div class="col-10">
+                <div id="questions-container"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -26,9 +43,9 @@
     </script>
     <div class="d-flex justify-content-center align-items-center">
         <button type="button" class="btn btn-primary" onclick="check()">Проверить</button>
-        
-    </div>
 
+    </div>
+    <script src="data.js"></script>
 </body>
 
 </html>
