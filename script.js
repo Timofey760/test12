@@ -1,23 +1,34 @@
 
 
 let questNumber;//глобальной переменной
+let isSpeaking=false;
+
+function speaking(text)
+{
+    if (!isSpeaking)
+        speakText(text);
+    else
+        stopSpeaking();
+    isSpeaking=!isSpeaking;
+
+}
 
 function renderQuestions(questions) {
     const container = document.getElementById('questions-container');
-    container.innerHTML='';
-    questNumber=0;
-    console.log(questions)
+    container.innerHTML = '';
+    questNumber = 0;
     questions.forEach((question, index) => {
         questNumber++;
         const questionDiv = document.createElement('div');
+        questionDiv.id='question'+questNumber;
         questionDiv.className = 'card mb-4';
-        questionDiv.style='border-radius:30px';
+        questionDiv.style = 'border-radius:30px';
         const questionHeader = document.createElement('div');
         questionHeader.className = 'card-header info';
-        
+
         questionHeader.textContent = `${index + 1}: ${question.info}`;
-        questionHeader.addEventListener('click',()=>{
-           speakText(questionHeader.textContent);
+        questionHeader.addEventListener('click', ()=>{
+            speaking(questionHeader.textContent);
         })
 
         const questionBody = document.createElement('div');
@@ -40,14 +51,17 @@ function renderQuestions(questions) {
             //questionInfo2.style='text-align: justify;';
             questionInfo2.textContent = `${question.info2}`;
             questionBody.appendChild(questionInfo2);
+            questionInfo2.addEventListener('click', ()=>{
+                speaking(questionInfo2.textContent);
+            });
         }
         const answerDiv = document.createElement('div');
         answerDiv.className = 'card mb-4';
-        answerDiv.id='answer'+questNumber;
-        if (question.variants) {            
+        answerDiv.id = 'answer' + questNumber;
+        if (question.variants) {
             question.variants.forEach(variant => {
                 const variantDiv = document.createElement('div');
-                
+
                 variantDiv.className = 'form-check';
 
                 const variantInput = document.createElement('input');
@@ -65,7 +79,7 @@ function renderQuestions(questions) {
                 answerDiv.appendChild(variantDiv);
             });
         } else {
-            const textInput = document.createElement('input');            
+            const textInput = document.createElement('input');
             textInput.className = 'form-control';
             textInput.type = 'text';
             textInput.placeholder = 'Enter your answer';
@@ -80,30 +94,51 @@ function renderQuestions(questions) {
     });
 }
 
-function check()
-{
-    
-    for(let i=1;i<=questNumber;i++)
-    {
-        let divAnswer=document.getElementById('answer'+i);
+function check() {
+    let correctCount=0;
+    for (let i = 1; i <= questNumber; i++) {
+        let divAnswer = document.getElementById('answer' + i);
+        let divQuestion=document.getElementById('question' + i);
         //console.log(divAnswer);
         const inputElement = divAnswer.querySelector('input[type="text"]');
         //console.log(inputElement);
         if (inputElement) {//text
 
-            console.log(inputElement.value);
+            //console.log(inputElement.value);
+            if (data['test 1'].questions[i-1].trueAnswer==inputElement.value) {
+                divQuestion.style.border='3px solid green';
+                correctCount++;
+                //divQuestion.style.color='green';
+            }
+            else
+            {
+                divQuestion.style.border='3px solid red';
+                //divQuestion.style.color='red';
+            }
         } else {
             const radioInputs = document.getElementsByName(`question${i}`);
 
             // Проходим по каждому элементу и проверяем, выбран ли он
+            let index=0;
             for (let radio of radioInputs) {
                 if (radio.checked) {
                     console.log('Выбранный radio input:', radio.value);
+                    if (index==data['test 1'].questions[i-1].trueAnswer)
+                    {
+                        correctCount++;
+                        divQuestion.style.border='3px solid green';
+                    }
+                    else
+                    {
+                        divQuestion.style.border='3px solid red';
+                    }
                     break; // Выходим из цикла, так как найден выбранный радиокнопка
                 }
-            } 
+                index++;
+            }
         }
     }
+    alert(`Вы ответили правильно на ${correctCount} вопросов`)
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -111,12 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function changeTest(nameTest) {
-    document.getElementById('display-name').innerHTML=data[nameTest].displayName;
+    document.getElementById('display-name').innerHTML = data[nameTest].displayName;
     renderQuestions(data[nameTest].questions);
 
 }
 
-let isAnimating = true;
+let isAnimating = false;
 
 function toggleAnimation() {
     const body = document.body;
@@ -167,6 +202,10 @@ function speakText(text) {
 }
 
 // Ожидаем, пока голоса будут загружены
-window.speechSynthesis.onvoiceschanged = function() {
+window.speechSynthesis.onvoiceschanged = function () {
     speakText();
 };
+
+function stopSpeaking() {
+    window.speechSynthesis.cancel();
+}
