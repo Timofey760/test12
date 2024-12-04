@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap');
+
+
 div{
-   # border: 1px dotted red;
+   #border: 3px dotted red;
 }
 
 .task-img
@@ -48,4 +51,37 @@ body {
 	100% {
 		background-position: 0% 50%;
 	}
+}
+
+.my-svg {
+    width: 20px;
+    height: 20px;
+	fill: rgb(222, 219, 219);
+	position:absolute; 
+	left: 10px;
+	top:10px;
+  }
+
+  h1 {
+	font-family: 'Lobster', cursive;
+	font-size: 3em;
+	color: #333;
+	text-align: center;
+	margin-top: 50px;
+}
+
+.sofia-sans-5 {
+	font-family: "Sofia Sans", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 30px;
+	font-style: normal;
+	font-size: 50px;
+	text-align: right;
+  }
+
+  
+
+  .logo img {
+    height: 100px; /* Установите нужную высоту логотипа */
+    width: auto; /* Ширина будет автоматически подстраиваться под высоту */
 }

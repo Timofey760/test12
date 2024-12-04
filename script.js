@@ -55,6 +55,16 @@ function renderQuestions(questions) {
                 speaking(questionInfo2.textContent);
             });
         }
+        if (question.info3) {
+            const questionInfo3 = document.createElement('div');
+            questionInfo3.className = 'info2';
+            //questionInfo3.style='text-align: justify;';
+            questionInfo3.textContent = `${question.info3}`;
+            questionBody.appendChild(questionInfo3);
+            questionInfo3.addEventListener('click', ()=>{
+                speaking(questionInfo3.textContent);
+            });
+        }
         const answerDiv = document.createElement('div');
         answerDiv.className = 'card mb-4';
         answerDiv.id = 'answer' + questNumber;
@@ -99,6 +109,7 @@ function check() {
     for (let i = 1; i <= questNumber; i++) {
         let divAnswer = document.getElementById('answer' + i);
         let divQuestion=document.getElementById('question' + i);
+
         //console.log(divAnswer);
         const inputElement = divAnswer.querySelector('input[type="text"]');
         //console.log(inputElement);

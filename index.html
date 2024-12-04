@@ -8,30 +8,59 @@
     <link href="styles.css" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
     <div class="container">
+        <header>
+            <div class="row">
+                <div class="logo">
+                    <img src="img/logo-top.png" alt="Логотип сайта">
+                </div>
+            <div class="col-9 sofia-sans-5">
+                Test Landia
+            </div>
+        </div>
+        </header>
         <div class="row">
-            <div class="col">
-                <h1 class="text-center" id="display-name"></h1>
+            <div class="col">                
+                <h1 class="col-9 sofia-sans-5" id="display-name"></h1>
             </div>
         </div>
         <div class="row">
             <div class="col-3">
                 <div class="btn-group-vertical" role="group" aria-label="Button group">
-                    <button class="btn btn-primary mt-4" onclick="changeTest('test 1')">Тест 1</button>
-                    <button class="btn btn-primary mt-4" onclick="changeTest('test 2')">Тест 2</button>
-                    <button class="btn btn-primary mt-4" id="toggleButton" onclick="toggleAnimation()">Start Animation</button> 
-                                       
+                    <button class="btn btn-primary mt-4" onclick="changeTest('test 1')">
+                        <svg class="my-svg"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M40 48C26.7 48 16 58.7 16 72l0 48c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-48c0-13.3-10.7-24-24-24L40 48zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32l288 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L192 64zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l288 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-288 0zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l288 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-288 0zM16 232l0 48c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-48c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24l0 48c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-48c0-13.3-10.7-24-24-24l-48 0z"/></svg>
+                        Тест 1
+                    </button>
+                    <button class="btn btn-primary mt-4" onclick="changeTest('test 2')">
+                        <svg class="my-svg"  style="top:5px"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"/></svg>
+                        Тест 2
+                    </button>
+                    <button class="btn btn-primary mt-4" onclick="changeTest('test 3')">
+                        Тест 3
+                    </button>
+                    <button class="btn btn-primary mt-4" id="toggleButton" onclick="toggleAnimation()">Start
+                        Animation</button>
+                        
                 </div>
             </div>
 
 
             <div class="col-9">
                 <div id="questions-container"></div>
+                <div class="d-flex justify-content-center align-items-center">
+                    <button type="button" class="btn btn-primary" onclick="check()">Проверить</button>
+
+                </div>
             </div>
         </div>
+        <footer class="d-flex justify-content-end align-items-center">
+            <div >Сайт разработал Курин Тимофей Александрович, 2024 год</div>
+        </footer>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -42,10 +71,7 @@
     <script src="script.js">
 
     </script>
-    <div class="d-flex justify-content-center align-items-center">
-        <button type="button" class="btn btn-primary" onclick="check()">Проверить</button>
 
-    </div>
     <script src="data.js"></script>
 </body>
 
