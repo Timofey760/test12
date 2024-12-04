@@ -1,16 +1,12 @@
+let questNumber;
+let isSpeaking = false;
 
-
-let questNumber;//глобальной переменной
-let isSpeaking=false;
-
-function speaking(text)
-{
+function speaking(text) {
     if (!isSpeaking)
         speakText(text);
     else
         stopSpeaking();
-    isSpeaking=!isSpeaking;
-
+    isSpeaking = !isSpeaking;
 }
 
 function renderQuestions(questions) {
@@ -20,14 +16,14 @@ function renderQuestions(questions) {
     questions.forEach((question, index) => {
         questNumber++;
         const questionDiv = document.createElement('div');
-        questionDiv.id='question'+questNumber;
+        questionDiv.id = 'question' + questNumber;
         questionDiv.className = 'card mb-4';
         questionDiv.style = 'border-radius:30px';
         const questionHeader = document.createElement('div');
         questionHeader.className = 'card-header info';
 
         questionHeader.textContent = `${index + 1}: ${question.info}`;
-        questionHeader.addEventListener('click', ()=>{
+        questionHeader.addEventListener('click', () => {
             speaking(questionHeader.textContent);
         })
 
@@ -48,20 +44,18 @@ function renderQuestions(questions) {
         if (question.info2) {
             const questionInfo2 = document.createElement('div');
             questionInfo2.className = 'info2';
-            //questionInfo2.style='text-align: justify;';
             questionInfo2.textContent = `${question.info2}`;
             questionBody.appendChild(questionInfo2);
-            questionInfo2.addEventListener('click', ()=>{
+            questionInfo2.addEventListener('click', () => {
                 speaking(questionInfo2.textContent);
             });
         }
         if (question.info3) {
             const questionInfo3 = document.createElement('div');
             questionInfo3.className = 'info2';
-            //questionInfo3.style='text-align: justify;';
             questionInfo3.textContent = `${question.info3}`;
             questionBody.appendChild(questionInfo3);
-            questionInfo3.addEventListener('click', ()=>{
+            questionInfo3.addEventListener('click', () => {
                 speaking(questionInfo3.textContent);
             });
         }
@@ -71,7 +65,6 @@ function renderQuestions(questions) {
         if (question.variants) {
             question.variants.forEach(variant => {
                 const variantDiv = document.createElement('div');
-
                 variantDiv.className = 'form-check';
 
                 const variantInput = document.createElement('input');
@@ -105,51 +98,39 @@ function renderQuestions(questions) {
 }
 
 function check() {
-    let correctCount=0;
+    let correctCount = 0;
+    const currentTest = data[document.getElementById('display-name').innerHTML];
+
     for (let i = 1; i <= questNumber; i++) {
         let divAnswer = document.getElementById('answer' + i);
-        let divQuestion=document.getElementById('question' + i);
+        let divQuestion = document.getElementById('question' + i);
 
-        //console.log(divAnswer);
         const inputElement = divAnswer.querySelector('input[type="text"]');
-        //console.log(inputElement);
-        if (inputElement) {//text
-
-            //console.log(inputElement.value);
-            if (data['test 1'].questions[i-1].trueAnswer==inputElement.value) {
-                divQuestion.style.border='3px solid green';
+        if (inputElement) { // text
+            if (currentTest.questions[i - 1].trueAnswer == inputElement.value) {
+                divQuestion.style.border = '3px solid green';
                 correctCount++;
-                //divQuestion.style.color='green';
-            }
-            else
-            {
-                divQuestion.style.border='3px solid red';
-                //divQuestion.style.color='red';
+            } else {
+                divQuestion.style.border = '3px solid red';
             }
         } else {
             const radioInputs = document.getElementsByName(`question${i}`);
-
-            // Проходим по каждому элементу и проверяем, выбран ли он
-            let index=0;
+            let index = 0;
             for (let radio of radioInputs) {
                 if (radio.checked) {
-                    console.log('Выбранный radio input:', radio.value);
-                    if (index==data['test 1'].questions[i-1].trueAnswer)
-                    {
+                    if (index == currentTest.questions[i - 1].trueAnswer) {
                         correctCount++;
-                        divQuestion.style.border='3px solid green';
+                        divQuestion.style.border = '3px solid green';
+                    } else {
+                        divQuestion.style.border = '3px solid red';
                     }
-                    else
-                    {
-                        divQuestion.style.border='3px solid red';
-                    }
-                    break; // Выходим из цикла, так как найден выбранный радиокнопка
+                    break;
                 }
                 index++;
             }
         }
     }
-    alert(`Вы ответили правильно на ${correctCount} вопросов`)
+    alert(`Вы ответили правильно на ${correctCount} вопросов`);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -159,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function changeTest(nameTest) {
     document.getElementById('display-name').innerHTML = data[nameTest].displayName;
     renderQuestions(data[nameTest].questions);
-
 }
 
 let isAnimating = false;
@@ -174,29 +154,17 @@ function toggleAnimation() {
         toggleButton.textContent = 'Stop Animation';
     }
     isAnimating = !isAnimating;
-};
-
-/*
-function speakText(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ru-RU'; // Устанавливаем язык на русский
-
-    window.speechSynthesis.speak(utterance);
 }
-*/
 
 function speakText(text) {
-
-
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ru-RU'; // Устанавливаем язык на русский
+    utterance.lang = 'ru-RU'; // Set language to Russian
 
-    // Получаем доступные голоса
+    // Get available voices
     const voices = window.speechSynthesis.getVoices();
-    console.log(voices);
     let selectedVoice = null;
 
-    // Ищем голос на русском языке
+    // Find a Russian voice
     for (let i = 0; i < voices.length; i++) {
         if (voices[i].lang === 'ru-RU' && voices[i].name.includes('Google')) {
             selectedVoice = voices[i];
@@ -204,7 +172,7 @@ function speakText(text) {
         }
     }
 
-    // Если найден подходящий голос, устанавливаем его
+    // Set the selected voice if found
     if (selectedVoice) {
         utterance.voice = selectedVoice;
     }
@@ -212,7 +180,7 @@ function speakText(text) {
     window.speechSynthesis.speak(utterance);
 }
 
-// Ожидаем, пока голоса будут загружены
+// Wait for voices to be loaded
 window.speechSynthesis.onvoiceschanged = function () {
     speakText();
 };

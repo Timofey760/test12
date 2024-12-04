@@ -1,87 +1,79 @@
 @import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap');
 
-
-div{
-   #border: 3px dotted red;
+div {
+    /* border: 3px dotted red; */
 }
 
-.task-img
-{
+.task-img {
     margin: 5px;
 }
 
-td input{
+td input {
     width: 100px;
 }
 
-.info2
-{
+.info2 {
     text-align: justify;
     color: black;
-    #font-size: 14px;
+    /* font-size: 14px; */
 }
 
-
-.info
-{
+.info {
     text-align: justify;
     color: black;
 }
 
-.quest-round
-{
+.quest-round {
     border-radius: 20px;
 }
 
-/*Анимарованный задний фон*/
+/* Анимационный задний фон */
 body {
-	background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-	background-size: 400% 400%;
-	#animation: gradient 15s ease infinite;
-	height: 100vh;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    /* animation: gradient 15s ease infinite; */
+    height: 100vh;
 }
 
 @keyframes gradient {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .my-svg {
     width: 20px;
     height: 20px;
-	fill: rgb(222, 219, 219);
-	position:absolute; 
-	left: 10px;
-	top:10px;
-  }
+    fill: rgb(222, 219, 219);
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
 
-  h1 {
-	font-family: 'Lobster', cursive;
-	font-size: 3em;
-	color: #333;
-	text-align: center;
-	margin-top: 50px;
+h1 {
+    font-family: 'Lobster', cursive;
+    font-size: 3em;
+    color: #333;
+    text-align: center;
+    margin-top: 50px;
 }
 
 .sofia-sans-5 {
-	font-family: "Sofia Sans", sans-serif;
-	font-optical-sizing: auto;
-	font-weight: 30px;
-	font-style: normal;
-	font-size: 50px;
-	text-align: right;
-  }
+    font-family: "Sofia Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 30px;
+    font-style: normal;
+    font-size: 50px;
+    text-align: right;
+}
 
-  
-
-  .logo img {
+.logo img {
     height: 100px; /* Установите нужную высоту логотипа */
     width: auto; /* Ширина будет автоматически подстраиваться под высоту */
 }
