@@ -1,4 +1,5 @@
 let questNumber;
+let currentTest;
 let isSpeaking = false;
 
 function speaking(text) {
@@ -99,7 +100,7 @@ function renderQuestions(questions) {
 
 function check() {
     let correctCount = 0;
-    const currentTest = data[document.getElementById('display-name').innerHTML];
+    //const currentTest = data[document.getElementById('display-name').innerHTML];
 
     for (let i = 1; i <= questNumber; i++) {
         let divAnswer = document.getElementById('answer' + i);
@@ -108,19 +109,19 @@ function check() {
         const inputElement = divAnswer.querySelector('input[type="text"]');
         if (inputElement) { // text
             if (currentTest.questions[i - 1].trueAnswer == inputElement.value) {
-                divQuestion.style.border = '3px solid green';
+                divQuestion.style.border = '3px solid #00C584';
                 correctCount++;
             } else {
                 divQuestion.style.border = '3px solid red';
             }
         } else {
             const radioInputs = document.getElementsByName(`question${i}`);
-            let index = 0;
+            let index = 1;
             for (let radio of radioInputs) {
                 if (radio.checked) {
                     if (index == currentTest.questions[i - 1].trueAnswer) {
                         correctCount++;
-                        divQuestion.style.border = '3px solid green';
+                        divQuestion.style.border = '3px solid #00C584';
                     } else {
                         divQuestion.style.border = '3px solid red';
                     }
@@ -139,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function changeTest(nameTest) {
     document.getElementById('display-name').innerHTML = data[nameTest].displayName;
+    currentTest=data[nameTest]
     renderQuestions(data[nameTest].questions);
 }
 
