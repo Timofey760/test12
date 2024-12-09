@@ -1,14 +1,133 @@
 let questNumber;
 let currentTest;
+let currentTestName;
 let isSpeaking = false;
+let isAudio = false;
 
 function speaking(text) {
-    if (!isSpeaking)
-        speakText(text);
-    else
-        stopSpeaking();
+    if (isAudio)
+        if (!isSpeaking)
+            speakText(text);
+        else
+            stopSpeaking();
     isSpeaking = !isSpeaking;
+
 }
+
+function toggleAudio() {
+    isAudio = !isAudio;
+    let toggleAudio = document.getElementById('toggleAudio');
+    if (isAudio) toggleAudio.innerHTML = 'Audio OFF';
+    else toggleAudio.innerHTML = 'Audio ON';
+
+}
+
+let nameLocalStorage = 'localStorageIvanovIvan';
+
+function save() {
+    if (typeof (Storage) !== "undefined") {
+        console.log("Local Storage доступен.");
+    } else {
+
+
+        alert("Local Storage не поддерживается.")
+        return;
+    }
+    let name = prompt('Введите ФИО:');
+
+    //Создаем  объект в котором соберем ответы пользователя и сохраним время сохранения
+    let object = {
+        userAnswers: [],
+        savedTime: null,
+        testName: null
+    };
+    object.testName = currentTestName;
+    //собирает текущие ответы
+    for (let i = 1; i <= questNumber; i++) {
+        let divAnswer = document.getElementById('answer' + i);
+        const inputElement = divAnswer.querySelector('input[type="text"]');
+        if (inputElement) { // text
+            object.userAnswers[i] = inputElement.value;
+        } else {
+
+
+            const radioInputs = document.getElementsByName(`question${i}`);
+            let index = 1;
+            for (let radio of radioInputs) {
+                if (radio.checked) {
+                    object.userAnswers[i] = index;
+                    break;
+                }
+                index++;
+            }
+        }
+    }
+
+    //в свойство объекта savedTime сохраняем текущее время
+    object.savedTime = new Date();
+    console.log(object)
+    //сохраняем объект в ввиде JSON строки в локальном хранилище браузера
+    localStorage.setItem(name, JSON.stringify(object));
+    alert('Данные сохранены')
+
+}
+
+function load() {
+    if (typeof (Storage) !== "undefined") {
+        console.log("Local Storage доступен.");
+    } else {
+
+
+        alert("Local Storage не поддерживается.")
+        return;
+    }
+
+    let name = prompt('Введите ФИО:');
+    //получение JSON данных из хранилища браузера
+    const temp = localStorage.getItem(name);
+    console.log(temp);
+    //если в переменной temp null, это означает что в хранилище нет данных с таким ключом
+    if (temp != null) {
+        //включаем обработку исключительной ситуации
+        let object;
+        try {
+            //преобразование JSON данных в объект
+            object = JSON.parse(temp);
+            //вывод данных в консоль (для проверки работоспособности программы)
+            console.log(object);
+        }
+        catch {
+            console.error('Ошибка парсирования JSON');
+            return;
+        }
+        changeTest(object.testName);
+        for (let i = 1; i <= questNumber; i++) {
+            let divAnswer = document.getElementById('answer' + i);
+        
+
+            const inputElement = divAnswer.querySelector('input[type="text"]');
+            if (inputElement) { // text
+                inputElement.value = object.userAnswers[i];
+            } else {
+
+
+                const radioInputs = document.getElementsByName(`question${i}`);
+                let index = 1;
+                for (let radio of radioInputs) {
+                    if (object.userAnswers[i] == index) {
+                        radio.checked = true;
+                        break;
+                    }
+                    index++;
+                }
+            }
+        }
+    }
+    else alert('Нет сохранений с таким именем')
+}
+
+
+
 
 function renderQuestions(questions) {
     const container = document.getElementById('questions-container');
@@ -67,12 +186,16 @@ function renderQuestions(questions) {
             question.variants.forEach(variant => {
                 const variantDiv = document.createElement('div');
                 variantDiv.className = 'form-check';
+                variantDiv.addEventListener('click', () => {
+                    speaking(variant)
+                });
 
                 const variantInput = document.createElement('input');
                 variantInput.className = 'form-check-input';
                 variantInput.type = 'radio';
                 variantInput.name = `question${questNumber}`;
                 variantInput.value = variant;
+
 
                 const variantLabel = document.createElement('label');
                 variantLabel.className = 'form-check-label';
@@ -140,7 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function changeTest(nameTest) {
     document.getElementById('display-name').innerHTML = data[nameTest].displayName;
-    currentTest=data[nameTest]
+    currentTest = data[nameTest]
+    currentTestName = nameTest;
     renderQuestions(data[nameTest].questions);
 }
 
