@@ -102,3 +102,23 @@ h1 {
     border: 1px solid red;
     
 }
+
+.my-svg2 {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(180deg); /* Изменяем цвет на белый */
+}
+
+.my-svg3 {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(180deg); /* Изменяем цвет на белый */
+}
+
+.my-svg4 {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(180deg); /* Изменяем цвет на белый */
+}
+
+.my-svg5 {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(180deg); /* Изменяем цвет на белый */
+}
+
+.my-svg6 {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(180deg); /* Изменяем цвет на белый */
+}
