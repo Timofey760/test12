@@ -2,25 +2,9 @@ let questNumber;
 let currentTest;
 let currentTestName;
 let isSpeaking = false;
-let isAudio = false;
+let isAudio = true;
 
-function speaking(text) {
-    if (isAudio)
-        if (!isSpeaking)
-            speakText(text);
-        else
-            stopSpeaking();
-    isSpeaking = !isSpeaking;
 
-}
-
-function toggleAudio() {
-    isAudio = !isAudio;
-    let toggleAudio = document.getElementById('toggleAudio');
-    if (isAudio) toggleAudio.innerHTML = 'Audio OFF';
-    else toggleAudio.innerHTML = 'Audio ON';
-
-}
 
 let nameLocalStorage = 'localStorageIvanovIvan';
 
@@ -103,7 +87,7 @@ function load() {
         changeTest(object.testName);
         for (let i = 1; i <= questNumber; i++) {
             let divAnswer = document.getElementById('answer' + i);
-        
+
 
             const inputElement = divAnswer.querySelector('input[type="text"]');
             if (inputElement) { // text
@@ -283,12 +267,32 @@ function toggleAnimation() {
 }
 
 function speakText(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ru-RU'; // Set language to Russian
+
+
+    //window.speechSynthesis.speak(utterance);
+    if (text!==undefined && text.length>0) speakAllWithDelay(text.split('.'),0,()=>{console.log('voiced end')});
+}
+
+// Wait for voices to be loaded
+window.speechSynthesis.onvoiceschanged = function () {
+    speakText();
+};
+
+function stopSpeaking() {
+    synth.cancel();
+}
+
+const synth = window.speechSynthesis;
+let voices = [];
+let selectedVoice = null;
+setTimeout(populateVoiceList,2000);
+
+function populateVoiceList() {
+    voices = synth.getVoices();
+
 
     // Get available voices
-    const voices = window.speechSynthesis.getVoices();
-    let selectedVoice = null;
+    //const voices = window.speechSynthesis.getVoices();
 
     // Find a Russian voice
     for (let i = 0; i < voices.length; i++) {
@@ -299,18 +303,65 @@ function speakText(text) {
     }
 
     // Set the selected voice if found
-    if (selectedVoice) {
-        utterance.voice = selectedVoice;
-    }
+    // if (selectedVoice) {
+    //     utterance.voice = selectedVoice;
+    // }
+    //console.log(voices);
+  }
 
-    window.speechSynthesis.speak(utterance);
+  function speaking(text) {
+    if (isAudio)
+        if (!isSpeaking)
+            speakText(text);
+        
+        else
+            stopSpeaking();
+        isSpeaking = !isSpeaking;
+
 }
 
-// Wait for voices to be loaded
-window.speechSynthesis.onvoiceschanged = function () {
-    speakText();
-};
+function speakAllWithDelay(texts, delay = 250, callback = log) {
+    if (synth.speaking) {
+        synth.cancel();
+        //console.error("speechSynthesis.speaking");
+        //return;
+    }
+    if (texts && texts.length > 0) {
+        setTimeout(() => {
+            i = 0;
+            const utterThis = new SpeechSynthesisUtterance(texts[i]);
+            utterThis.voice = selectedVoice;
+            utterThis.onend = function (event) {
+                console.log(`speak ${i} end`);
+                i++;
+                if (i < texts.length) {
+                    utterThis.text = texts[i];
+                    synth.speak(utterThis);
+                    //alert(voices)
 
-function stopSpeaking() {
-    window.speechSynthesis.cancel();
+                }
+                else
+                    callback();
+            };
+            utterThis.onerror = function (event) {
+                console.error("SpeechSynthesisUtterance.onerror:" + event.error);
+                return;
+            };
+            //speakOverUtterance(utterThis);
+            utterThis.pitch = 1.2;
+            utterThis.rate = 1;
+            //utterThis.lang = "en-GB";
+            synth.speak(utterThis);
+        }, delay);
+
+
+    }
+}
+
+function toggleAudio() {
+    isAudio = !isAudio;
+    let toggleAudio = document.getElementById('toggleAudio');
+    if (isAudio) toggleAudio.innerHTML = 'Audio OFF';
+    else toggleAudio.innerHTML = 'Audio ON';
+
 }
