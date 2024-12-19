@@ -1,104 +1,150 @@
+// Объявление переменных для хранения номера вопроса, текущего теста, имени теста, состояния воспроизведения и аудио
 let questNumber;
 let currentTest;
 let currentTestName;
 let isSpeaking = false;
 let isAudio = true;
 
-
-
+// Имя для локального хранилища
 let nameLocalStorage = 'localStorageIvanovIvan';
 
+function saveDB()
+{
+    // Формируем JSON
+    const data = {
+        name:'Ivanov',
+        test_name: 'test 1',
+        saved_time: new Date(),
+        user_answers: [],
+        count_correct: 4
+    };
+    getUserAnswers(data);
+    // Отправляем данные на сервер
+    fetch('php/save_db.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.text)
+    .then(data => {
+        console.log('Success:', data);
+        alert('Данные успешно отправлены!');
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        alert('Ошибка при отправке данных!');
+    });
+}
+
+
+function getUserAnswers(object)
+{
+    console.log(object);
+        // Сбор текущих ответов пользователя
+        for (let i = 1; i <= questNumber; i++) {
+            let divAnswer = document.getElementById('answer' + i);
+            const inputElement = divAnswer.querySelector('input[type="text"]');
+            if (inputElement) { // text
+                object.user_answers[i] = inputElement.value;
+            } else {
+                const radioInputs = document.getElementsByName(`question${i}`);
+                let index = 1;
+                for (let radio of radioInputs) {
+                    if (radio.checked) {
+                        object.user_answers[i] = index;
+                        break;
+                    }
+                    index++;
+                }
+            }
+        }
+}
+
+// Функция для сохранения данных в локальное хранилище браузера
 function save() {
+    // Проверка поддержки локального хранилища
     if (typeof (Storage) !== "undefined") {
         console.log("Local Storage доступен.");
     } else {
-
-
         alert("Local Storage не поддерживается.")
         return;
     }
+
+    // Запрос имени пользователя
     let name = prompt('Введите ФИО:');
 
-    //Создаем  объект в котором соберем ответы пользователя и сохраним время сохранения
+    // Создание объекта для хранения ответов пользователя и времени сохранения
     let object = {
-        userAnswers: [],
+        user_answers: [],
         savedTime: null,
         testName: null
     };
     object.testName = currentTestName;
-    //собирает текущие ответы
-    for (let i = 1; i <= questNumber; i++) {
-        let divAnswer = document.getElementById('answer' + i);
-        const inputElement = divAnswer.querySelector('input[type="text"]');
-        if (inputElement) { // text
-            object.userAnswers[i] = inputElement.value;
-        } else {
 
 
-            const radioInputs = document.getElementsByName(`question${i}`);
-            let index = 1;
-            for (let radio of radioInputs) {
-                if (radio.checked) {
-                    object.userAnswers[i] = index;
-                    break;
-                }
-                index++;
-            }
-        }
-    }
 
-    //в свойство объекта savedTime сохраняем текущее время
+    // Сохранение текущего времени в объект
     object.savedTime = new Date();
-    console.log(object)
-    //сохраняем объект в ввиде JSON строки в локальном хранилище браузера
+    console.log(object);
+    getUserAnswers(object);
+    // Сохранение объекта в локальное хранилище в виде JSON строки
     localStorage.setItem(name, JSON.stringify(object));
-    alert('Данные сохранены')
-
+    alert('Данные сохранены');
 }
 
+// Функция для загрузки данных из локального хранилища
 function load() {
+    // Проверка поддержки локального хранилища
     if (typeof (Storage) !== "undefined") {
         console.log("Local Storage доступен.");
     } else {
-
-
         alert("Local Storage не поддерживается.")
         return;
     }
 
+    // Запрос имени пользователя
     let name = prompt('Введите ФИО:');
-    //получение JSON данных из хранилища браузера
+
+    // Получение JSON данных из хранилища
     const temp = localStorage.getItem(name);
     console.log(temp);
-    //если в переменной temp null, это означает что в хранилище нет данных с таким ключом
+
+    // Проверка наличия данных в хранилище
     if (temp != null) {
-        //включаем обработку исключительной ситуации
         let object;
         try {
-            //преобразование JSON данных в объект
+            // Преобразование JSON данных в объект
             object = JSON.parse(temp);
-            //вывод данных в консоль (для проверки работоспособности программы)
             console.log(object);
         }
         catch {
             console.error('Ошибка парсирования JSON');
             return;
         }
+
+        // Изменение теста на сохраненный
         changeTest(object.testName);
+        setAnswers(object);
+
+    }
+    else alert('Нет сохранений с таким именем');
+}
+
+function setAnswers(object)
+{
+        // Восстановление ответов пользователя
         for (let i = 1; i <= questNumber; i++) {
             let divAnswer = document.getElementById('answer' + i);
-
-
             const inputElement = divAnswer.querySelector('input[type="text"]');
             if (inputElement) { // text
-                inputElement.value = object.userAnswers[i];
+                inputElement.value = object.user_answers[i];
             } else {
-
-
                 const radioInputs = document.getElementsByName(`question${i}`);
                 let index = 1;
                 for (let radio of radioInputs) {
-                    if (object.userAnswers[i] == index) {
+                    if (object.user_answers[i] == index) {
                         radio.checked = true;
                         break;
                     }
@@ -106,13 +152,9 @@ function load() {
                 }
             }
         }
-    }
-    else alert('Нет сохранений с таким именем')
 }
 
-
-
-
+// Функция для отображения вопросов
 function renderQuestions(questions) {
     const container = document.getElementById('questions-container');
     container.innerHTML = '';
@@ -123,17 +165,18 @@ function renderQuestions(questions) {
         questionDiv.id = 'question' + questNumber;
         questionDiv.className = 'card mb-4';
         questionDiv.style = 'border-radius:30px';
+
         const questionHeader = document.createElement('div');
         questionHeader.className = 'card-header info';
-
         questionHeader.textContent = `${index + 1}: ${question.info}`;
         questionHeader.addEventListener('click', () => {
             speaking(questionHeader.textContent);
-        })
+        });
 
         const questionBody = document.createElement('div');
         questionBody.className = 'card-body';
 
+        // Добавление изображений, если они есть
         if (question.images && question.images.length > 0) {
             const imagesDiv = document.createElement('div');
             imagesDiv.className = 'mb-3';
@@ -145,6 +188,8 @@ function renderQuestions(questions) {
             });
             questionBody.appendChild(imagesDiv);
         }
+
+        // Добавление дополнительной информации, если она есть
         if (question.info2) {
             const questionInfo2 = document.createElement('div');
             questionInfo2.className = 'info2';
@@ -154,6 +199,7 @@ function renderQuestions(questions) {
                 speaking(questionInfo2.textContent);
             });
         }
+
         if (question.info3) {
             const questionInfo3 = document.createElement('div');
             questionInfo3.className = 'info2';
@@ -163,15 +209,18 @@ function renderQuestions(questions) {
                 speaking(questionInfo3.textContent);
             });
         }
+
         const answerDiv = document.createElement('div');
         answerDiv.className = 'card mb-4';
         answerDiv.id = 'answer' + questNumber;
+
+        // Добавление вариантов ответов, если они есть
         if (question.variants) {
             question.variants.forEach(variant => {
                 const variantDiv = document.createElement('div');
                 variantDiv.className = 'form-check';
                 variantDiv.addEventListener('click', () => {
-                    speaking(variant)
+                    speaking(variant);
                 });
 
                 const variantInput = document.createElement('input');
@@ -179,7 +228,6 @@ function renderQuestions(questions) {
                 variantInput.type = 'radio';
                 variantInput.name = `question${questNumber}`;
                 variantInput.value = variant;
-
 
                 const variantLabel = document.createElement('label');
                 variantLabel.className = 'form-check-label';
@@ -190,6 +238,7 @@ function renderQuestions(questions) {
                 answerDiv.appendChild(variantDiv);
             });
         } else {
+            // Добавление текстового поля для ввода ответа
             const textInput = document.createElement('input');
             textInput.className = 'form-control';
             textInput.type = 'text';
@@ -197,6 +246,7 @@ function renderQuestions(questions) {
             textInput.name = `question${index}`;
             answerDiv.appendChild(textInput);
         }
+
         questionBody.appendChild(answerDiv);
         questionDiv.appendChild(questionHeader);
         questionDiv.appendChild(questionBody);
@@ -205,10 +255,9 @@ function renderQuestions(questions) {
     });
 }
 
+// Функция для проверки ответов
 function check() {
     let correctCount = 0;
-    //const currentTest = data[document.getElementById('display-name').innerHTML];
-
     for (let i = 1; i <= questNumber; i++) {
         let divAnswer = document.getElementById('answer' + i);
         let divQuestion = document.getElementById('question' + i);
@@ -241,19 +290,22 @@ function check() {
     alert(`Вы ответили правильно на ${correctCount} вопросов`);
 }
 
+// Обработчик события загрузки DOM
 document.addEventListener('DOMContentLoaded', () => {
     changeTest('test 1');
 });
 
+// Функция для смены теста
 function changeTest(nameTest) {
     document.getElementById('display-name').innerHTML = data[nameTest].displayName;
-    currentTest = data[nameTest]
+    currentTest = data[nameTest];
     currentTestName = nameTest;
     renderQuestions(data[nameTest].questions);
 }
 
 let isAnimating = false;
 
+// Функция для переключения анимации
 function toggleAnimation() {
     const body = document.body;
     if (isAnimating) {
@@ -266,18 +318,17 @@ function toggleAnimation() {
     isAnimating = !isAnimating;
 }
 
+// Функция для озвучивания текста
 function speakText(text) {
-
-
-    //window.speechSynthesis.speak(utterance);
-    if (text!==undefined && text.length>0) speakAllWithDelay(text.split('.'),0,()=>{console.log('voiced end')});
+    if (text !== undefined && text.length > 0) speakAllWithDelay(text.split('.'), 0, () => { console.log('voiced end') });
 }
 
-// Wait for voices to be loaded
+// Обработчик события изменения голосов
 window.speechSynthesis.onvoiceschanged = function () {
     speakText();
 };
 
+// Функция для остановки озвучивания
 function stopSpeaking() {
     synth.cancel();
 }
@@ -285,50 +336,39 @@ function stopSpeaking() {
 const synth = window.speechSynthesis;
 let voices = [];
 let selectedVoice = null;
-setTimeout(populateVoiceList,2000);
+setTimeout(populateVoiceList, 2000);
 
+// Функция для заполнения списка голосов
 function populateVoiceList() {
     voices = synth.getVoices();
 
-
-    // Get available voices
-    //const voices = window.speechSynthesis.getVoices();
-
-    // Find a Russian voice
+    // Поиск русского голоса
     for (let i = 0; i < voices.length; i++) {
         if (voices[i].lang === 'ru-RU' && voices[i].name.includes('Google')) {
             selectedVoice = voices[i];
             break;
         }
     }
+}
 
-    // Set the selected voice if found
-    // if (selectedVoice) {
-    //     utterance.voice = selectedVoice;
-    // }
-    //console.log(voices);
-  }
-
-  function speaking(text) {
+// Функция для озвучивания текста
+function speaking(text) {
     if (isAudio)
         if (!isSpeaking)
             speakText(text);
-        
         else
             stopSpeaking();
-        isSpeaking = !isSpeaking;
-
+    isSpeaking = !isSpeaking;
 }
 
+// Функция для озвучивания текста с задержкой
 function speakAllWithDelay(texts, delay = 250, callback = log) {
     if (synth.speaking) {
         synth.cancel();
-        //console.error("speechSynthesis.speaking");
-        //return;
     }
     if (texts && texts.length > 0) {
         setTimeout(() => {
-            i = 0;
+            let i = 0;
             const utterThis = new SpeechSynthesisUtterance(texts[i]);
             utterThis.voice = selectedVoice;
             utterThis.onend = function (event) {
@@ -337,8 +377,6 @@ function speakAllWithDelay(texts, delay = 250, callback = log) {
                 if (i < texts.length) {
                     utterThis.text = texts[i];
                     synth.speak(utterThis);
-                    //alert(voices)
-
                 }
                 else
                     callback();
@@ -347,21 +385,17 @@ function speakAllWithDelay(texts, delay = 250, callback = log) {
                 console.error("SpeechSynthesisUtterance.onerror:" + event.error);
                 return;
             };
-            //speakOverUtterance(utterThis);
             utterThis.pitch = 1.2;
             utterThis.rate = 1;
-            //utterThis.lang = "en-GB";
             synth.speak(utterThis);
         }, delay);
-
-
     }
 }
 
+// Функция для переключения аудио
 function toggleAudio() {
     isAudio = !isAudio;
     let toggleAudio = document.getElementById('toggleAudio');
     if (isAudio) toggleAudio.innerHTML = 'Audio OFF';
     else toggleAudio.innerHTML = 'Audio ON';
-
 }
