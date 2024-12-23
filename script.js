@@ -8,58 +8,85 @@ let isAudio = true;
 // Имя для локального хранилища
 let nameLocalStorage = 'localStorageIvanovIvan';
 
-function saveDB()
-{
-    // Формируем JSON
-    const data = {
-        name:'Ivanov',
-        test_name: 'test 1',
-        saved_time: new Date(),
-        user_answers: [],
-        count_correct: 4
-    };
-    getUserAnswers(data);
-    // Отправляем данные на сервер
-    fetch('php/save_db.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+function saveDB() {
+//    alert('Введит ФИО');
+    Swal.fire({
+        title: 'Введите ФИО:',
+        input: 'text',
+        inputAttributes: {
+            autocapitalize: 'off'
         },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.text)
-    .then(data => {
-        console.log('Success:', data);
-        alert('Данные успешно отправлены!');
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        alert('Ошибка при отправке данных!');
-    });
+        showCancelButton: true,
+        confirmButtonText: 'Подтвердить',
+        showLoaderOnConfirm: true,
+        preConfirm: (name) => {
+            if (!name) {
+                Swal.showValidationMessage(`Пожалуйста, введите ФИО`);
+            }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Формируем JSON    
+            const data = {
+                name: result,
+                test_name: 'test 1',
+                saved_time: new Date(),
+                user_answers: [],
+                count_correct: 4
+            };
+            getUserAnswers(data);
+            // Отправляем данные на сервер
+            fetch('php/save_db.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.text)
+                .then(data => {
+                    console.log('Success:', data);                
+                    Swal.fire({
+                        title: "Ура!",
+                        text: "Данные успешно отправлены!",
+                        icon: "success"
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: "Ошибка",
+                        text: "Ошибка при отправке данных!",
+                        icon: "error"
+                    });
+                });
+        }
+    }
+    );
 }
 
 
-function getUserAnswers(object)
-{
+function getUserAnswers(object) {
     console.log(object);
-        // Сбор текущих ответов пользователя
-        for (let i = 1; i <= questNumber; i++) {
-            let divAnswer = document.getElementById('answer' + i);
-            const inputElement = divAnswer.querySelector('input[type="text"]');
-            if (inputElement) { // text
-                object.user_answers[i] = inputElement.value;
-            } else {
-                const radioInputs = document.getElementsByName(`question${i}`);
-                let index = 1;
-                for (let radio of radioInputs) {
-                    if (radio.checked) {
-                        object.user_answers[i] = index;
-                        break;
-                    }
-                    index++;
+    // Сбор текущих ответов пользователя
+    for (let i = 1; i <= questNumber; i++) {
+        let divAnswer = document.getElementById('answer' + i);
+        const inputElement = divAnswer.querySelector('input[type="text"]');
+        if (inputElement) { // text
+            object.user_answers[i] = inputElement.value;
+        } else {
+            const radioInputs = document.getElementsByName(`question${i}`);
+            let index = 1;
+            for (let radio of radioInputs) {
+                if (radio.checked) {
+                    object.user_answers[i] = index;
+                    break;
                 }
+                index++;
             }
         }
+    }
 }
 
 // Функция для сохранения данных в локальное хранилище браузера
@@ -68,30 +95,61 @@ function save() {
     if (typeof (Storage) !== "undefined") {
         console.log("Local Storage доступен.");
     } else {
-        alert("Local Storage не поддерживается.")
+        SweetAlert("Local Storage не поддерживается.")
         return;
     }
 
     // Запрос имени пользователя
-    let name = prompt('Введите ФИО:');
-
-    // Создание объекта для хранения ответов пользователя и времени сохранения
-    let object = {
-        user_answers: [],
-        savedTime: null,
-        testName: null
-    };
-    object.testName = currentTestName;
+    //let name = prompt('Введите ФИО:');
 
 
+    Swal.fire({
+        title: 'Введите ФИО:',
+        input: 'text',
+        inputAttributes: {
+            autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Подтвердить',
+        showLoaderOnConfirm: true,
+        preConfirm: (name) => {
+            if (!name) {
+                Swal.showValidationMessage(`Пожалуйста, введите ФИО`);
+            }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let name = result.value;
+            // Здесь вы можете использовать переменную name
+            console.log('Введенное ФИО:', name);
+            // Создание объекта для хранения ответов пользователя и времени сохранения
+            let object = {
+                user_answers: [],
+                savedTime: null,
+                testName: null
+            };
+            object.testName = currentTestName;
 
-    // Сохранение текущего времени в объект
-    object.savedTime = new Date();
-    console.log(object);
-    getUserAnswers(object);
-    // Сохранение объекта в локальное хранилище в виде JSON строки
-    localStorage.setItem(name, JSON.stringify(object));
-    alert('Данные сохранены');
+
+
+            // Сохранение текущего времени в объект
+            object.savedTime = new Date();
+            console.log(object);
+            getUserAnswers(object);
+            // Сохранение объекта в локальное хранилище в виде JSON строки
+            localStorage.setItem(name, JSON.stringify(object));
+            SweetAlert('Данные сохранены');
+
+
+        }
+    });
+
+
+
+
+
+
 }
 
 // Функция для загрузки данных из локального хранилища
@@ -100,7 +158,7 @@ function load() {
     if (typeof (Storage) !== "undefined") {
         console.log("Local Storage доступен.");
     } else {
-        alert("Local Storage не поддерживается.")
+        SweetAlert("Local Storage не поддерживается.")
         return;
     }
 
@@ -129,29 +187,28 @@ function load() {
         setAnswers(object);
 
     }
-    else alert('Нет сохранений с таким именем');
+    else SweetAlert('Нет сохранений с таким именем');
 }
 
-function setAnswers(object)
-{
-        // Восстановление ответов пользователя
-        for (let i = 1; i <= questNumber; i++) {
-            let divAnswer = document.getElementById('answer' + i);
-            const inputElement = divAnswer.querySelector('input[type="text"]');
-            if (inputElement) { // text
-                inputElement.value = object.user_answers[i];
-            } else {
-                const radioInputs = document.getElementsByName(`question${i}`);
-                let index = 1;
-                for (let radio of radioInputs) {
-                    if (object.user_answers[i] == index) {
-                        radio.checked = true;
-                        break;
-                    }
-                    index++;
+function setAnswers(object) {
+    // Восстановление ответов пользователя
+    for (let i = 1; i <= questNumber; i++) {
+        let divAnswer = document.getElementById('answer' + i);
+        const inputElement = divAnswer.querySelector('input[type="text"]');
+        if (inputElement) { // text
+            inputElement.value = object.user_answers[i];
+        } else {
+            const radioInputs = document.getElementsByName(`question${i}`);
+            let index = 1;
+            for (let radio of radioInputs) {
+                if (object.user_answers[i] == index) {
+                    radio.checked = true;
+                    break;
                 }
+                index++;
             }
         }
+    }
 }
 
 // Функция для отображения вопросов
@@ -287,7 +344,7 @@ function check() {
             }
         }
     }
-    alert(`Вы ответили правильно на ${correctCount} вопросов`);
+    SweetAlert(`Вы ответили правильно на ${correctCount} вопросов`);
 }
 
 // Обработчик события загрузки DOM
