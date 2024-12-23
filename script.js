@@ -4,9 +4,40 @@ let currentTest;
 let currentTestName;
 let isSpeaking = false;
 let isAudio = true;
+let correctCount = 0;
 
 // Имя для локального хранилища
 let nameLocalStorage = 'localStorageIvanovIvan';
+
+async function loadDB() {
+    let name = prompt('Введите ФИО:');
+    try {
+        const response = await fetch('php/load_db.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: name ,test_name:currentTestName})
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+
+        }
+
+        const result = await response.json();
+        //const data = await response.text();
+        console.log('Retrieved data:', result);
+        result.user_answers=JSON.parse(result.user_answers);
+        setAnswers(result);
+        
+
+        
+        
+    } catch (error) {
+        console.error('Error retrieving data:', error);
+    }
+}
 
 function saveDB() {
 //    alert('Введит ФИО');
@@ -26,14 +57,15 @@ function saveDB() {
         },
         allowOutsideClick: () => !Swal.isLoading()
     }).then((result) => {
+        console.log(result.value);
         if (result.isConfirmed) {
             // Формируем JSON    
             const data = {
-                name: result,
-                test_name: 'test 1',
+                name: result.value,
+                test_name: currentTestName,
                 saved_time: new Date(),
                 user_answers: [],
-                count_correct: 4
+                count_correct: correctCount
             };
             getUserAnswers(data);
             // Отправляем данные на сервер
@@ -175,6 +207,7 @@ function load() {
         try {
             // Преобразование JSON данных в объект
             object = JSON.parse(temp);
+            
             console.log(object);
         }
         catch {
@@ -192,10 +225,13 @@ function load() {
 
 function setAnswers(object) {
     // Восстановление ответов пользователя
+    console.log(object.user_answers)
     for (let i = 1; i <= questNumber; i++) {
+        console.log(object.user_answers[i]);
         let divAnswer = document.getElementById('answer' + i);
         const inputElement = divAnswer.querySelector('input[type="text"]');
         if (inputElement) { // text
+            console.log(object.user_answers[i]);
             inputElement.value = object.user_answers[i];
         } else {
             const radioInputs = document.getElementsByName(`question${i}`);
@@ -314,7 +350,7 @@ function renderQuestions(questions) {
 
 // Функция для проверки ответов
 function check() {
-    let correctCount = 0;
+    
     for (let i = 1; i <= questNumber; i++) {
         let divAnswer = document.getElementById('answer' + i);
         let divQuestion = document.getElementById('question' + i);

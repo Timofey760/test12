@@ -35,7 +35,7 @@ try {
     $name = $data['name'];
     $test_name = $data['test_name'];
     $saved_time = date("Y-m-d H:i:s", strtotime($data['saved_time']));
-    $user_answers = json_encode([$data['user_answers']]);
+    $user_answers = json_encode($data['user_answers']);
 
     logMessage('all work!');
 
